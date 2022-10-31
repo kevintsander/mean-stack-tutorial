@@ -1,7 +1,20 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+
+const config = require('./config.json');
+
+const Post = require('./models/post'); // capital starting character convention - allows you to define object based on 'blueprint'
 
 const app = express();
+
+mongoose.connect(`mongodb+srv://${config['mongo-user']}:${config['mongo-password']}@cluster0.g7oxtkv.mongodb.net/?retryWrites=true&w=majority`)
+  .then(() => {
+    console.log('Connected to database!');
+  })
+  .catch(() => {
+    console.log('Connection failed!');
+  });
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -20,8 +33,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded( { extended: false })); // not actually used, just shown as part of training to indicate other types of data besides json can be parsed
 
 app.post('/api/posts', (req, res, next) => {
-  const posts = req.body;
-  console.log(posts);
+  const post = new Post({
+    title: req.body.title,
+    content: req.body.content
+  });
+  console.log(post);
   res.status(201).json({
     message: "Post added successfully!"
   });
