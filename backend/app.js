@@ -8,7 +8,7 @@ const Post = require('./models/post'); // capital starting character convention 
 
 const app = express();
 
-mongoose.connect(`mongodb+srv://${config['mongo-user']}:${config['mongo-password']}@cluster0.g7oxtkv.mongodb.net/?retryWrites=true&w=majority`)
+mongoose.connect(`mongodb+srv://${config['db']['user']}:${config['db']['password']}@cluster0.g7oxtkv.mongodb.net/${config['db']['db-name']}?retryWrites=true&w=majority`)
   .then(() => {
     console.log('Connected to database!');
   })
@@ -37,6 +37,7 @@ app.post('/api/posts', (req, res, next) => {
     title: req.body.title,
     content: req.body.content
   });
+  post.save();
   console.log(post);
   res.status(201).json({
     message: "Post added successfully!"
