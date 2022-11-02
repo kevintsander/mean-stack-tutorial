@@ -4,7 +4,9 @@ import { Observable, Observer } from "rxjs";
 export const mimeType = (control: AbstractControl): Promise<{ [key: string]: any }> | Observable<{ [key: string]: any } | null> => {
   const file = control.value as File;
   const fileReader = new FileReader();
+  // we need to create an observable to return using rxjs
   const fileReaderObs = new Observable((observer: Observer<{ [key: string]: any } | null>) => {
+    //below could also use this syntax: fileReader.onloadend = () => { /* code here */ }
     fileReader.addEventListener("loadend", () => {
       const arr = new Uint8Array(fileReader.result as ArrayBuffer).subarray(0, 4);
       let header = "";
