@@ -1,7 +1,11 @@
 import { AbstractControl } from "@angular/forms";
-import { Observable, Observer } from "rxjs";
+import { Observable, Observer, of } from "rxjs";
 
 export const mimeType = (control: AbstractControl): Promise<{ [key: string]: any }> | Observable<{ [key: string]: any } | null> => {
+  // if the image is just a string (path) pass validation automatically
+  if (typeof (control.value) === 'string') {
+    return of(null);  //quick way to create a simple observable with rxjs (it emits each argument immediately and then completes)
+  }
   const file = control.value as File;
   const fileReader = new FileReader();
   // we need to create an observable to return using rxjs

@@ -51,29 +51,55 @@ router.post(
   }
 );
 
-router.put("/:id", (req, res, next) => {
-  const post = new Post({
-    _id: req.body.id,
-    title: req.body.title,
-    content: req.body.content,
-  });
-  Post.updateOne({ _id: req.params.id }, post).then((result) => {
-    console.log(result);
-    res.status(200).json({ message: "Update successful!" });
-  });
-});
+router.put(
+  "/:id",
+  multer({ storage: storage }).single("image"),
+  (req, res, next) => {
+    let imagePath = req.body.imagePath;
+    // if a new file was uploaded, get the new path
+    if (req.file) {
+      const url = req.protocol + "://" + req.get("host");
+      imagePath = `${url}/images/${req.file.filename}`;
+    }
+    const post = new Post({
+      _id: req.body.id,
+      title: req.body.title,
+      content: req.body.content,
+      imagePath: imagePath,
+    });
+    console.log(post);
+    Post.updateOne({ _id: req.params.id }, post).then((result) => {
+      res.status(200).json({ message: "Update successful!" });
+    });
+  }
+);
 
 router.get("", (req, res, next) => {
-  Post.find().then((documents) => {
-    res.status(200).json({
-      message: "Posts fetched successfully!",
-      posts: documents,
+  const pageSize = req.query.pagesize;
+  const currentPage = req.query.page;
+  const postQuery = Post.find(); // just creates the find query, doesn't run it!
+  let fetchedPosts;
+
+  if (pageSize && currentPage) {
+    postQuery
+      .skip(pageSize * (currentPage - 1)) // skips all the items from previous pages
+      .limit(pageSize); // limits the items on this page
+  }
+  postQuery
+    .then((documents) => {
+      fetchedPosts = documents;
+      return Post.count();
+    })
+    .then((count) => {
+      res.status(200).json({
+        message: "Post fetched successfully!",
+        posts: fetchedPosts,
+        maxPosts: count,
+      });
     });
-  });
 });
 
 router.get("/:id", (req, res, next) => {
-  console.log("test");
   Post.findById(req.params.id).then((post) => {
     if (post) {
       res.status(200).json(post);
@@ -85,7 +111,6 @@ router.get("/:id", (req, res, next) => {
 
 router.delete("/:id", (req, res, next) => {
   Post.deleteOne({ _id: req.params.id }).then((result) => {
-    console.log(result);
     res.status(200).json({ message: "Post deleted!" });
   });
 });
