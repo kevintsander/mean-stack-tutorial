@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const config = require("./config.json");
 
 const postRoutes = require("./routes/posts");
+const userRoutes = require("./routes/user");
 
 const app = express();
 
@@ -38,5 +39,5 @@ app.use(bodyParser.urlencoded({ extended: false })); // not actually used, just 
 app.use("/images", express.static(path.join("backend/images")));
 
 app.use("/api/posts", postRoutes);
-
+app.use("/api/user", userRoutes);
 module.exports = app;
