@@ -19,6 +19,7 @@ export class PostListComponent implements OnInit, OnDestroy {
   pageSizeOptions = [1, 2, 5, 10];
   isLoading: boolean = false;
   userIsAuthenticated: boolean = false;
+  userId: string | null;
   private postsSub: Subscription = new Subscription;
   private authStatusSub: Subscription = new Subscription;
 
@@ -27,6 +28,7 @@ export class PostListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.isLoading = true;
     this.postsService.getPosts(this.postsPerPage, this.currentPage);
+    this.userId = this.authService.getUserId();
     this.postsSub = this.postsService.getPostUpdateListener()
       .subscribe((postData: { posts: Post[], postCount: number }) => {
         this.isLoading = false;
@@ -34,9 +36,12 @@ export class PostListComponent implements OnInit, OnDestroy {
         this.totalPosts = postData.postCount;
       });
     this.userIsAuthenticated = this.authService.getIsAuth(); // get current status of authorization, then also add subscription to listen for any changes to it
-    this.authStatusSub = this.authService.getAuthStatusListener().subscribe(isAuthenticated => {
-      this.userIsAuthenticated = isAuthenticated;
-    })
+    this.authStatusSub = this.authService
+      .getAuthStatusListener()
+      .subscribe(isAuthenticated => {
+        this.userIsAuthenticated = isAuthenticated;
+        this.userId = this.authService.getUserId();
+      });
   }
 
   ngOnDestroy() {
