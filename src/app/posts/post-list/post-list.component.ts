@@ -38,9 +38,11 @@ export class PostListComponent implements OnInit, OnDestroy {
     this.userIsAuthenticated = this.authService.getIsAuth(); // get current status of authorization, then also add subscription to listen for any changes to it
     this.authStatusSub = this.authService
       .getAuthStatusListener()
-      .subscribe(isAuthenticated => {
-        this.userIsAuthenticated = isAuthenticated;
-        this.userId = this.authService.getUserId();
+      .subscribe({
+        next: (isAuthenticated) => {
+          this.userIsAuthenticated = isAuthenticated;
+          this.userId = this.authService.getUserId();
+        }
       });
   }
 
@@ -51,9 +53,13 @@ export class PostListComponent implements OnInit, OnDestroy {
 
   onDelete(postId: string) {
     this.isLoading = true;
-    this.postsService.deletePost(postId).subscribe(() => {
-      this.postsService.getPosts(this.postsPerPage, this.currentPage);
-    });
+    this.postsService.deletePost(postId)
+      .subscribe({
+        next: () => this.postsService.getPosts(this.postsPerPage, this.currentPage),
+        error: (err) => {
+          this.isLoading = false;
+        }
+      });
   }
 
   onChangedPage(pageData: PageEvent) {
