@@ -12,7 +12,7 @@ const app = express();
 
 mongoose
   .connect(
-    `mongodb+srv://${config["db"]["user"]}:${config["db"]["password"]}@cluster0.g7oxtkv.mongodb.net/${config["db"]["db-name"]}?retryWrites=true&w=majority`
+    `mongodb+srv://${process.env.MONGO_ATLAS_USER}:${process.env.MONGO_ATLAS_PW}@cluster0.g7oxtkv.mongodb.net/${process.env.MONGO_ATLAS_DB_NAME}?retryWrites=true&w=majority`
   )
   .then(() => {
     console.log("Connected to database!");

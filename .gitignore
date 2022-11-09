@@ -42,7 +42,9 @@ testem.log
 Thumbs.db
 
 # Configuration files
-config.json
+nodemon.json
+environment.ts
+environment.prod.ts
 
 # Saved Images
 /backend/images/*
