@@ -43,8 +43,7 @@ Thumbs.db
 
 # Configuration files
 nodemon.json
-environment.ts
-environment.prod.ts
+/src/environments/**
 
 # Saved Images
 /backend/images/*
